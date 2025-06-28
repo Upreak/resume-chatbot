@@ -10,7 +10,7 @@ loguru
 # Resume Parsing
 PyMuPDF
 pdfplumber
-python-magic-bin
+python-magic
 
 # Google Sheets/Drive Integration
 gspread
