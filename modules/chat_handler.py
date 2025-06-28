@@ -18,7 +18,7 @@ async def telegram_webhook(req: Request):
 
     reply = f"🧠 Echo: {message}"  # You can customize this or connect AI later
 
-    url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
+    url = f"https://api.telegram.org/bot{7980838931:AAGfy6k614PdUm_vpeJNTIXmurCdJlaZMwU}/sendMessage"
     payload = {"chat_id": chat_id, "text": reply}
 
     async with httpx.AsyncClient() as client:
