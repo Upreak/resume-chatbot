@@ -1,3 +1,22 @@
-uvicorn
 fastapi
+uvicorn
 httpx
+python-dotenv
+
+# Google Sheets/Drive
+gspread
+google-auth
+google-api-python-client
+
+# Resume Parser
+PyMuPDF
+pydantic
+
+# File handling
+aiofiles
+
+# Scraping
+beautifulsoup4
+lxml
+requests
+aiohttp
