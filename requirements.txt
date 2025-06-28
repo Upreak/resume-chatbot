@@ -20,3 +20,9 @@ beautifulsoup4
 lxml
 requests
 aiohttp
+
+python-magic-bin
+celery
+sqlalchemy
+APScheduler
+loguru
