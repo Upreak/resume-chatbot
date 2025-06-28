@@ -1,28 +1,31 @@
+# Core
 fastapi
 uvicorn
 httpx
 python-dotenv
+pydantic
+aiofiles
+loguru
 
-# Google Sheets/Drive
+# Resume Parsing
+PyMuPDF
+pdfplumber
+python-magic-bin
+
+# Google Sheets/Drive Integration
 gspread
 google-auth
 google-api-python-client
 
-# Resume Parser
-PyMuPDF
-pydantic
-
-# File handling
-aiofiles
-
-# Scraping
+# Web Scraping
 beautifulsoup4
 lxml
 requests
 aiohttp
 
-python-magic-bin
+# Task Scheduling / Background Jobs
 celery
-sqlalchemy
 APScheduler
-loguru
+
+# Database (if needed later)
+sqlalchemy
