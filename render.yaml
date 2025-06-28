@@ -1,0 +1,8 @@
+services:
+  - type: web
+    name: resume-chatbot-api
+    env: python
+    plan: free
+    branch: main
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app:app --host 0.0.0.0 --port 10000
