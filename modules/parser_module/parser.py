@@ -1,29 +1,21 @@
-import pdfplumber
-import re
+from resume_parser import resumeparse
 
 def extract_text_from_pdf(file_path: str) -> str:
-    text = ""
-    with pdfplumber.open(file_path) as pdf:
-        for page in pdf.pages:
-            text += page.extract_text() or ""
-    return text.strip()
+    # Keep this in case you want raw text
+    data = resumeparse.read_file(file_path)
+    return data.get("text", "")
 
-def parse_resume_text(text: str) -> dict:
-    # Basic patterns
-    email = re.findall(r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+", text)
-    phone = re.findall(r"\+?\d[\d\s\-()]{8,}", text)
-
-    # Try to guess name (first line fallback)
-    lines = text.splitlines()
-    probable_name = lines[0].strip() if lines else ""
-
-    # Keywords-based skill extraction (simple)
-    skill_keywords = ["Python", "Java", "SQL", "HTML", "CSS", "JavaScript", "AWS", "Node.js", "React", "FastAPI"]
-    found_skills = [skill for skill in skill_keywords if skill.lower() in text.lower()]
+def parse_resume_text(file_path: str) -> dict:
+    data = resumeparse.read_file(file_path)
 
     return {
-        "name": probable_name,
-        "email": email[0] if email else "Not found",
-        "phone": phone[0] if phone else "Not found",
-        "skills": found_skills or [],
+        "full_name": data.get("name", "Not found"),
+        "email": data.get("email", "Not found"),
+        "phone": data.get("mobile_number", "Not found"),
+        "skills": data.get("skills", []),
+        "education_highest": data.get("degree", ["Not found"])[0],
+        "education_second": data.get("degree", ["", "Not found"])[1] if len(data.get("degree", [])) > 1 else "",
+        "total_experience": data.get("total_experience", "Not found"),
+        "current_role": data.get("designation", "Not found"),
+        "current_location": data.get("location", "Not found")
     }
