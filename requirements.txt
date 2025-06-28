@@ -6,6 +6,11 @@ python-dotenv
 pydantic
 aiofiles
 loguru
+gspread
+oauth2client
+httpx
+fastapi
+python-dotenv
 
 # Resume Parsing
 PyMuPDF
