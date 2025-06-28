@@ -2,26 +2,20 @@ from fastapi import APIRouter, Request
 import httpx
 import os
 
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 router = APIRouter()
 
-TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+@router.post("/webhook/telegram")
+async def telegram_webhook(request: Request):
+    data = await request.json()
+    print("📩 Received:", data)
 
-@router.post("/")
-async def telegram_webhook(req: Request):
-    body = await req.json()
-    message = body.get("message", {}).get("text", "")
-    chat_id = body.get("message", {}).get("chat", {}).get("id")
-
-    if not message or not chat_id:
-        return {"ok": False}
-
-    reply = f"🧠 Echo: {message}"  # You can customize this or connect AI later
-
-    url = f"https://api.telegram.org/bot{7980838931:AAGfy6k614PdUm_vpeJNTIXmurCdJlaZMwU}/sendMessage"
-    payload = {"chat_id": chat_id, "text": reply}
-
-    async with httpx.AsyncClient() as client:
-        await client.post(url, json=payload)
-
+    if "message" in data:
+        chat_id = data["message"]["chat"]["id"]
+        text = data["message"].get("text", "")
+        if text:
+            await httpx.post(
+                f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage",
+                json={"chat_id": chat_id, "text": f"🧠 Echo: {text}"}
+            )
     return {"ok": True}
