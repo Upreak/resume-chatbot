@@ -11,6 +11,7 @@ loguru
 PyMuPDF
 pdfplumber
 python-magic
+cv-parser-huggingface @ git+https://github.com/asimokby/cv-parser-huggingface.git
 
 # Google Sheets/Drive Integration
 gspread
