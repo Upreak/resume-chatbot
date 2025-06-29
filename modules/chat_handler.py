@@ -4,7 +4,7 @@ import os
 import tempfile
 import datetime
 from shared.telegram_api import send_message
-from parser_module.resume_parser import extract_text_from_pdf
+from modules.parser_module.resume_parser import extract_text_from_pdf
 
 router = APIRouter()
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
