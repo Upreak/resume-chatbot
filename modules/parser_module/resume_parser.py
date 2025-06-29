@@ -1,5 +1,7 @@
 import fitz  # PyMuPDF
 import re
+import nltk
+nltk.data.path.append("./nltk_data")  # 👈 Add this right after importing nltk
 
 def extract_text_from_pdf(pdf_path: str) -> str:
     text = ""
