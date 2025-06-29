@@ -1,0 +1,13 @@
+{
+  "JM": {
+    "module": "scraper",
+    "params": ["skills", "experience", "education", "current_role", "preferred_location"],
+    "max_results": 5,
+    "on_fail": "technical"
+  },
+  "RD": {
+    "module": "resume_builder",
+    "params": "all",
+    "on_fail": "manual_review"
+  }
+}
