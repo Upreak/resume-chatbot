@@ -20,6 +20,7 @@ pyresparser
 nltk
 spacy
 
+
 # Google Sheets/Drive Integration
 gspread
 google-auth
@@ -30,6 +31,7 @@ beautifulsoup4
 lxml
 requests
 aiohttp
+duckduckgo-search
 
 # Task Scheduling / Background Jobs
 celery
