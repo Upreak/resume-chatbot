@@ -1,24 +1,48 @@
-import fitz  # PyMuPDF
+import pdfplumber
 import re
+from typing import Dict
+from pyresparser import ResumeParser
 import nltk
-nltk.data.path.append("./nltk_data")  # 👈 Add this right after importing nltk
 
-def extract_text_from_pdf(pdf_path: str) -> str:
+# NLTK path for offline/cloud use
+nltk.data.path.append("./nltk_data")
+
+# ✂️ PDF to plain text
+def extract_text_from_pdf(file_path: str) -> str:
     text = ""
-    with fitz.open(pdf_path) as doc:
-        for page in doc:
-            text += page.get_text()
-    return text
+    with pdfplumber.open(file_path) as pdf:
+        for page in pdf.pages:
+            text += page.extract_text() or ""
+    return text.strip()
 
-def parse_resume_text(text: str) -> dict:
-    # Example parsing logic — can be improved
-    name_match = re.search(r"(?i)name[:\s]*(.*)", text)
-    email_match = re.search(r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+", text)
-    phone_match = re.search(r"(\+?\d[\d\s\-\(\)]{9,}\d)", text)
+# 🧠 Fallback name if parser fails
+def fallback_name(email: str) -> str:
+    if email and "@" in email:
+        return email.split("@")[0].replace('.', ' ').title()
+    return "Unknown"
 
-    return {
-        "name": name_match.group(1).strip() if name_match else None,
-        "email": email_match.group(0) if email_match else None,
-        "phone": phone_match.group(0) if phone_match else None,
-        "raw_text": text  # for debugging, remove later
+# 🧪 Full parser output
+def parse_resume_text(file_path: str) -> Dict[str, str]:
+    data = ResumeParser(file_path).get_extracted_data()
+
+    # Name fallback
+    name = data.get("name") or fallback_name(data.get("email", ""))
+    if "father" in name.lower() or "s/o" in name.lower():
+        name = fallback_name(data.get("email", ""))
+
+    degrees = data.get("degree", [])
+    education_highest = degrees[0] if degrees else "Not found"
+    education_second = degrees[1] if len(degrees) > 1 else ""
+
+    result = {
+        "name": name,
+        "email": data.get("email", "Not found"),
+        "phone": data.get("mobile_number", "Not found"),
+        "education": f"{education_highest}, {education_second}".strip(", "),
+        "skills": ", ".join(data.get("skills", [])),
+        "experience": data.get("total_experience", "Not found"),
+        "current_role": data.get("designation", "Not found"),
+        "current_location": data.get("location", "Not found")
     }
+
+    return result
