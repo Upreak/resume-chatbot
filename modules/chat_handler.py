@@ -35,7 +35,7 @@ async def telegram_webhook(request: Request):
 
         if text in ["/start", "hi", "hello"]:
             await send_message(chat_id, """
-👋 Welcome to Joptech — powered by Upreak 💼
+👋 Welcome to Jobtech — powered by Upreak 💼
 
 Just upload your resume OR answer a few quick questions — and we’ll find job matches for you.
 
