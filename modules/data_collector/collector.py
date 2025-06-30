@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Request
-from parser_module.resume_parser import parse_resume_text
+from modules.parser_module.resume_parser import parse_resume_text
 from shared.telegram_api import send_message
 import os
 import httpx
