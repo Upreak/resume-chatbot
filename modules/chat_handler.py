@@ -5,6 +5,9 @@ import tempfile
 import datetime
 from shared.telegram_api import send_message
 from modules.parser_module.resume_parser import extract_text_from_pdf
+from shared.logger import log_event
+
+log_event("resume_uploaded", {"user_id": "9611xxxxxx", "file": "cv.pdf"})
 
 router = APIRouter()
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
