@@ -1,48 +1,68 @@
-import pdfplumber
 import re
-from typing import Dict
-from pyresparser import ResumeParser
-import nltk
+import spacy
+import pdfplumber
 
-# NLTK path for offline/cloud use
-nltk.data.path.append("./nltk_data")
+nlp = spacy.load("en_core_web_sm")
 
-# ✂️ PDF to plain text
-def extract_text_from_pdf(file_path: str) -> str:
-    text = ""
-    with pdfplumber.open(file_path) as pdf:
-        for page in pdf.pages:
-            text += page.extract_text() or ""
-    return text.strip()
+def extract_text_from_pdf(pdf_path):
+    with pdfplumber.open(pdf_path) as pdf:
+        return "\n".join(page.extract_text() for page in pdf.pages if page.extract_text())
 
-# 🧠 Fallback name if parser fails
-def fallback_name(email: str) -> str:
-    if email and "@" in email:
-        return email.split("@")[0].replace('.', ' ').title()
+def extract_name(text):
+    doc = nlp(text)
+    for ent in doc.ents:
+        if ent.label_ == "PERSON":
+            return ent.text
     return "Unknown"
 
-# 🧪 Full parser output
-def parse_resume_text(file_path: str) -> Dict[str, str]:
-    data = ResumeParser(file_path).get_extracted_data()
+def extract_email(text):
+    match = re.search(r'[\w\.-]+@[\w\.-]+', text)
+    return match.group(0) if match else "Not found"
 
-    # Name fallback
-    name = data.get("name") or fallback_name(data.get("email", ""))
-    if "father" in name.lower() or "s/o" in name.lower():
-        name = fallback_name(data.get("email", ""))
+def extract_phone(text):
+    match = re.search(r'(\+?\d{1,3}[-.\s]?)?\(?\d{3,5}\)?[-.\s]?\d{4,6}[-.\s]?\d{0,6}', text)
+    return match.group(0) if match else "Not found"
 
-    degrees = data.get("degree", [])
-    education_highest = degrees[0] if degrees else "Not found"
-    education_second = degrees[1] if len(degrees) > 1 else ""
+def extract_skills(text):
+    SKILLS = ["Python", "JavaScript", "SQL", "AWS", "Django", "React", "Excel", "Java", "C++"]
+    return [skill for skill in SKILLS if skill.lower() in text.lower()]
 
-    result = {
-        "name": name,
-        "email": data.get("email", "Not found"),
-        "phone": data.get("mobile_number", "Not found"),
-        "education": f"{education_highest}, {education_second}".strip(", "),
-        "skills": ", ".join(data.get("skills", [])),
-        "experience": data.get("total_experience", "Not found"),
-        "current_role": data.get("designation", "Not found"),
-        "current_location": data.get("location", "Not found")
+def extract_education(text):
+    edu_keywords = ["Bachelor", "Master", "B.Tech", "M.Tech", "B.Sc", "M.Sc", "MBA"]
+    lines = text.split("\n")
+    for line in lines:
+        if any(k in line for k in edu_keywords):
+            return line.strip()
+    return "Not found"
+
+def extract_experience(text):
+    match = re.search(r'(\d+)\+?\s*(years|yrs)', text.lower())
+    return match.group(0) if match else "Not found"
+
+def extract_current_role(text):
+    for line in text.split("\n")[:10]:  # Only top 10 lines
+        if "engineer" in line.lower() or "developer" in line.lower():
+            return line.strip()
+    return "Not found"
+
+def extract_location(text):
+    LOCATIONS = ["Bangalore", "Mumbai", "Delhi", "Hyderabad", "Chennai", "Remote"]
+    for loc in LOCATIONS:
+        if loc.lower() in text.lower():
+            return loc
+    return "Unknown"
+
+def parse_resume_text(pdf_path: str) -> dict:
+    text = extract_text_from_pdf(pdf_path)
+
+    return {
+        "name": extract_name(text),
+        "email": extract_email(text),
+        "phone": extract_phone(text),
+        "skills": extract_skills(text),
+        "education": extract_education(text),
+        "experience": extract_experience(text),
+        "current_role": extract_current_role(text),
+        "current_location": extract_location(text),
+        "raw_text": text
     }
-
-    return result
