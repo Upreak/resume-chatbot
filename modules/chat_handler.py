@@ -6,6 +6,10 @@ import datetime
 from shared.telegram_api import send_message
 from modules.parser_module.resume_parser import extract_text_from_pdf
 from shared.logger import log_event
+from modules.data_collector.data_store import save_user_data
+
+# Inside your webhook:
+save_user_data(user_id=chat_id, data=parsed_result)
 
 log_event("resume_uploaded", {"user_id": "9611xxxxxx", "file": "cv.pdf"})
 
